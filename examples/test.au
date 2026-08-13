@@ -3,3 +3,4 @@ let age = 21;
 let earth_g = 9.8;
 let comp = 10 < 11;
 let sum = 1 + 2;
+let result = 2*(1 + x);
