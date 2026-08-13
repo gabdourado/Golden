@@ -53,3 +53,7 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Flex
+lex.yy.c
+*.lex.c
