@@ -4,8 +4,12 @@
 
 VAR [a-zA-Z][a-zA-Z0-9_]*
 COMMENT #[^\n]*
-DECL "let"
 NUM [0-9]+(\.[0-9]*)?
+STRING \"[^"]*\"
+
+DECL "let"
+INPUT "input"
+PRINT "print"
 
 ASSIGN "="
 EQ "=="
@@ -31,6 +35,8 @@ COMMA     ","
 %%
 
 {DECL}      {printf("VARIABLE DECLARATION: %s\n", yytext);}
+{INPUT}     {printf("INPUT: %s\n", yytext);}
+{PRINT}     {printf("OUTPUT: %s\n", yytext);}
 {ASSIGN}    {printf("ASSIGN: %s\n", yytext);}
 {EQ}        {printf("EQUAL: %s\n", yytext);}
 {NEQ}       {printf("NOT EQUAL: %s\n", yytext);}
@@ -52,6 +58,7 @@ COMMA     ","
 {VAR}       {printf("VARIABLE: %s\n", yytext);}
 {NUM}       {printf("NUMBER: %s\n", yytext);}
 {COMMENT}   {printf("COMMENT: %s\n", yytext);}
+{STRING}    {printf("STRING: %s\n", yytext);}
 
 [ \n\t] ;
 
