@@ -7,21 +7,26 @@ COMMENT #[^\n]*
 NUM [0-9]+(\.[0-9]*)?
 STRING \"[^"]*\"
 
-DECL "let"
+DECL  "let"
 INPUT "input"
 PRINT "print"
 
+INT   "int"
+FLOAT "float"
+STR   "str"
+BOOL  "bool"
+
 ASSIGN "="
-EQ "=="
-NEQ "!="
-LT "<"
-LTE "<="
-GT ">"
-GTE ">="
+EQ     "=="
+NEQ    "!="
+LT     "<"
+LTE    "<="
+GT     ">"
+GTE    ">="
 
 PLUS  "+"
 MINUS "-"
-MUL  "*"
+MUL   "*"
 DIV   "/"
 
 SEMICOLON ";"
@@ -35,6 +40,10 @@ COMMA     ","
 %%
 
 {DECL}      {printf("VARIABLE DECLARATION: %s\n", yytext);}
+{INT}       {printf("TYPE INT: %s\n", yytext);}
+{FLOAT}     {printf("TYPE FLOAT: %s\n", yytext);}
+{STR}       {printf("TYPE STR: %s\n", yytext);}
+{BOOL}      {printf("TYPE BOOL: %s\n", yytext);}
 {INPUT}     {printf("INPUT: %s\n", yytext);}
 {PRINT}     {printf("OUTPUT: %s\n", yytext);}
 {ASSIGN}    {printf("ASSIGN: %s\n", yytext);}
