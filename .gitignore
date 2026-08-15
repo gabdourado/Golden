@@ -57,3 +57,8 @@ dkms.conf
 # Flex
 lex.yy.c
 *.lex.c
+
+# Bison
+*.tab.c
+*.tab.h
+*.output
