@@ -1,5 +1,6 @@
-all: src/golden.l
+all: src/golden.y src/golden.l
 	clear
-	flex src/golden.l
-	gcc lex.yy.c -lfl
+	bison -d src/golden.y -o src/golden.tab.c
+	flex -o src/lex.yy.c src/golden.l
+	gcc src/golden.tab.c src/lex.yy.c -lfl
 	./a.out

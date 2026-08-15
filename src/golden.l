@@ -1,11 +1,11 @@
 %{
-
+#include "golden.tab.h"
 %}
 
-VAR [a-zA-Z][a-zA-Z0-9_]*
+VAR     [a-zA-Z][a-zA-Z0-9_]*
 COMMENT #[^\n]*
-NUM [0-9]+(\.[0-9]*)?
-STRING \"[^"]*\"
+NUM     [0-9]+(\.[0-9]*)?
+STRING  \"[^"]*\"
 
 DECL  "let"
 INPUT "input"
@@ -14,7 +14,6 @@ PRINT "print"
 INT   "int"
 FLOAT "float"
 STR   "str"
-BOOL  "bool"
 
 ASSIGN "="
 EQ     "=="
@@ -39,14 +38,13 @@ COMMA     ","
 
 %%
 
-{DECL}      {printf("VARIABLE DECLARATION: %s\n", yytext);}
-{INT}       {printf("TYPE INT: %s\n", yytext);}
-{FLOAT}     {printf("TYPE FLOAT: %s\n", yytext);}
-{STR}       {printf("TYPE STR: %s\n", yytext);}
-{BOOL}      {printf("TYPE BOOL: %s\n", yytext);}
-{INPUT}     {printf("INPUT: %s\n", yytext);}
-{PRINT}     {printf("OUTPUT: %s\n", yytext);}
-{ASSIGN}    {printf("ASSIGN: %s\n", yytext);}
+{DECL}      {return DECL;}
+{INT}       {return INT;}
+{FLOAT}     {return FLOAT;}
+{STR}       {return STR;}
+{INPUT}     {return INPUT;}
+{PRINT}     {return PRINT;}
+{ASSIGN}    {return ASSIGN;}
 {EQ}        {printf("EQUAL: %s\n", yytext);}
 {NEQ}       {printf("NOT EQUAL: %s\n", yytext);}
 {LT}        {printf("LESS: %s\n", yytext);}
@@ -57,27 +55,33 @@ COMMA     ","
 {MINUS}     {printf("MINUS: %s\n", yytext);}
 {MUL}       {printf("MUL: %s\n", yytext);}
 {DIV}       {printf("DIV: %s\n", yytext);}
-{SEMICOLON} {printf("SEMICOLON: %s\n", yytext);}
-{LPAREN}    {printf("LPAREN: %s\n", yytext);}
-{RPAREN}    {printf("RPAREN: %s\n", yytext);}
+{SEMICOLON} {return SEMICOLON;}
+{LPAREN}    {return LPAREN;}
+{RPAREN}    {return RPAREN;}
 {LBRACE}    {printf("LBRACE: %s\n", yytext);}
 {RBRACE}    {printf("RBRACE: %s\n", yytext);}
-{COLON}     {printf("COLON: %s\n", yytext);}
+{COLON}     {return COLON;}
 {COMMA}     {printf("COMMA: %s\n", yytext);}
-{VAR}       {printf("VARIABLE: %s\n", yytext);}
-{NUM}       {printf("NUMBER: %s\n", yytext);}
-{COMMENT}   {printf("COMMENT: %s\n", yytext);}
-{STRING}    {printf("STRING: %s\n", yytext);}
+{VAR}       {yylval.str = strdup(yytext); return VARIABLE;}
+{NUM}       {
+                if (strchr(yytext, '.') != NULL) {
+                    yylval.f = atof(yytext);
+                    return NUM_FLOAT;
+                } else {
+                    yylval.i = atoi(yytext);
+                    return NUM_INT;
+                }
+            }
+{STRING}    {
+                yytext[strlen(yytext)-1] = '\0';
+                yylval.str = strdup(yytext+1);
+                return STRING;
+            }
+
+{COMMENT}   ;
 
 [ \n\t] ;
 
 . {printf("Error, character don't recognize: %s\n", yytext);}
 
 %%
-
-int main() {
-    yyin = fopen("examples/test.au", "r");
-    yylex();
-    fclose(yyin);
-    return 0;
-}

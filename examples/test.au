@@ -1,9 +1,10 @@
 # This is Golden Language!
-let age : int = 21;
-let earth_g : float = 9.8;
-let comp : bool = 10 < 11;
-let sum : int = 1 + 2;
-let result : float = 2*(1 + x);
-let name : str = "Karolinda";
-print(name);
-let data : str = input();
+
+let frase : str = "Hello, my name is Karolinda!";
+print(frase);
+
+print("Tell your age: ");
+let age : int; input(age);
+
+print("Your age is: ");
+print(age);
