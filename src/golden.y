@@ -7,6 +7,7 @@ typedef enum{
     TYPE_INT,
     TYPE_FLOAT,
     TYPE_STR,
+    TYPE_BOOL
 } DataType;
 
 typedef struct {
@@ -29,6 +30,7 @@ Table T;
 void    symtab_set_int  (char* name, int   value);
 void    symtab_set_float(char* name, float value);
 void    symtab_set_str  (char* name, char* value);
+void    symtab_set_bool (char* name, int value);
 Symbol* symtab_get      (char* name);
 
 int yylex(void);
@@ -45,10 +47,11 @@ extern FILE *yyin;
 }
 
 %token DECL INPUT PRINT ASSIGN SEMICOLON COLON LPAREN RPAREN
-%token INT FLOAT STR
+%token INT FLOAT STR BOOL
 %token <i> NUM_INT
 %token <f> NUM_FLOAT
 %token <str> VARIABLE STRING
+%token <i> VALUE_BOOL
 
 %%
 
@@ -81,6 +84,12 @@ declaration:
     }
     | DECL VARIABLE COLON STR {
         symtab_set_str($2, "");
+    }
+    | DECL VARIABLE COLON BOOL ASSIGN VALUE_BOOL {
+        symtab_set_bool($2, $6);
+    }
+    | DECL VARIABLE COLON BOOL {
+        symtab_set_bool($2, 0);
     }
     ;
 
@@ -115,6 +124,14 @@ read:
                                     break;
                                 }
                 case TYPE_STR:   symtab_set_str($3, buffer); break;
+                case TYPE_BOOL: {
+                    char* c = "true";
+                    if(strcmp(buffer, c) == 0)
+                        symtab_set_bool($3, 1);
+                    else
+                        symtab_set_bool($3, 0);
+                    break;
+                }
             }
         }
     }
@@ -130,6 +147,7 @@ write:
                 case TYPE_INT:   printf("%d\n", sym->value.i); break;
                 case TYPE_FLOAT: printf("%f\n", sym->value.f); break;
                 case TYPE_STR:   printf("%s\n", sym->value.s); break;
+                case TYPE_BOOL:  printf("%s\n", sym->value.i ? "true" : "false"); break;
             }
         }
     }
@@ -179,6 +197,19 @@ void symtab_set_str(char* name, char* value){
     T.length++;
 }
 
+void symtab_set_bool(char* name, int value) {
+    for(int pos = 0; pos < T.length; pos++) {
+        if(strcmp(T.s[pos].name, name) == 0) {
+            T.s[pos].value.i = value;
+            return;
+        }
+    }
+    strcpy(T.s[T.length].name, name);
+    T.s[T.length].type    = TYPE_BOOL;
+    T.s[T.length].value.i = value;
+    T.length++;
+}
+
 Symbol* symtab_get(char* name) {
     for(int pos = 0; pos < T.length; pos++) 
         if(strcmp(T.s[pos].name, name) == 0) 
@@ -195,6 +226,6 @@ int main() {
 }
 
 int yyerror(char *s) {
-    fprintf(stderr, "Erro sintatico: %s\n", s);
+    fprintf(stderr, "Syntatic Error: %s\n", s);
     return 0;
 }

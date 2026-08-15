@@ -3,8 +3,12 @@
 let frase : str = "Hello, my name is Karolinda!";
 print(frase);
 
-print("Tell your age: ");
-let age : int; input(age);
+let age : int;
+print("What is your age? ");
+input(age);
 
 print("Your age is: ");
 print(age);
+
+let condition : bool = true;
+print(condition);

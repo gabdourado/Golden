@@ -2,10 +2,10 @@
 #include "golden.tab.h"
 %}
 
-VAR     [a-zA-Z][a-zA-Z0-9_]*
-COMMENT #[^\n]*
-NUM     [0-9]+(\.[0-9]*)?
-STRING  \"[^"]*\"
+VARIABLE [a-zA-Z][a-zA-Z0-9_]*
+COMMENT  #[^\n]*
+NUM      [0-9]+(\.[0-9]*)?
+STRING   \"[^"]*\"
 
 DECL  "let"
 INPUT "input"
@@ -14,6 +14,9 @@ PRINT "print"
 INT   "int"
 FLOAT "float"
 STR   "str"
+BOOL  "bool"
+TRUE  "true"
+FALSE "false"
 
 ASSIGN "="
 EQ     "=="
@@ -42,6 +45,9 @@ COMMA     ","
 {INT}       {return INT;}
 {FLOAT}     {return FLOAT;}
 {STR}       {return STR;}
+{BOOL}      {return BOOL;}
+{TRUE}      {yylval.i = 1; return VALUE_BOOL;}
+{FALSE}     {yylval.i = 0; return VALUE_BOOL;}
 {INPUT}     {return INPUT;}
 {PRINT}     {return PRINT;}
 {ASSIGN}    {return ASSIGN;}
@@ -62,7 +68,7 @@ COMMA     ","
 {RBRACE}    {printf("RBRACE: %s\n", yytext);}
 {COLON}     {return COLON;}
 {COMMA}     {printf("COMMA: %s\n", yytext);}
-{VAR}       {yylval.str = strdup(yytext); return VARIABLE;}
+{VARIABLE}  {yylval.str = strdup(yytext); return VARIABLE;}
 {NUM}       {
                 if (strchr(yytext, '.') != NULL) {
                     yylval.f = atof(yytext);
