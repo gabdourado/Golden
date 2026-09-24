@@ -3,21 +3,23 @@
 %}
 
 NUM [0-9]+
+PRINT "print"
+VAR [a-zA-Z]
 
 %%
 
 {NUM} {
-    yylval = atoi(yytext);
+    yylval.Float = atof(yytext);
     return VALOR;
 }
 
-"+" {
-    return '+';
+{VAR} {
+    return VAR;
 }
 
-"*" {
-    return '*';
-}
+{PRINT} {return PRINT;}
+
+[-+*/()] {return *yytext;}
 
 [\ \n\t]* {;}
 
