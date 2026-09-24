@@ -19,7 +19,7 @@ VAR [a-zA-Z]
 
 {PRINT} {return PRINT;}
 
-[-+*/()] {return *yytext;}
+[-+*/()=] {return *yytext;}
 
 [\ \n\t]* {;}
 

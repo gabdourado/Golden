@@ -47,7 +47,7 @@ cod :
         strcpy(V.lista[V.tam].nome, $1);
         V.tam++;
     }
-    PRINT '(' VAR ')' {
+    | PRINT '(' VAR ')' {
         for(int i = 0; i < V.tam; i++) {
             if(strcmp($3, V.lista[i].nome) == 0) {
                 printf("%2.f\n", V.lista[i].valor);
@@ -60,9 +60,7 @@ E:    E '+' E   {$$ = $1 + $3;}
     | E '*' E   {$$ = $1 * $3;}
     | E '/' E   {$$ = $1 / $3;}
     | '(' E ')' {$$ = $2;}
-    | VALOR {
-                $$ = $1;
-            }   
+    | VALOR     {$$ = $1;}   
 ;
 %%
 
