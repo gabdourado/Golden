@@ -4,7 +4,7 @@
     #include <string.h>
 
     typedef struct {
-        char* nome;
+        char nome[50];
         float valor;
     } variavel;
 
@@ -15,19 +15,22 @@
 
     variaveis V;
 
-    int yylex(void);
-    int yyerror(char *s) {
-        printf("%s\n", s);
+    int busca_idx(char* nome) {
+        for(int i = 0; i < V.tam; i++)
+            if (strcmp(nome, V.lista[i].nome) == 0) return i;
+        return -1;
     }
+
+    int yylex(void);
+    void yyerror(char *s) { printf("%s\n", s); }
 %}
 
 %union{
     float Float;
-    int Int;
     char* Str;
 }
 
-%token <Float> VALOR
+%token <Float> NUM
 %token <Str> VAR
 %token PRINT
 %left '+' '-'
@@ -43,25 +46,28 @@ prog : prog cod
 
 cod : 
     VAR '=' E {
-        V.lista[V.tam].valor = $3;
-        strcpy(V.lista[V.tam].nome, $1);
-        V.tam++;
+        int idx = busca_idx($1);
+        if(idx < 0) { idx = V.tam++; strcpy(V.lista[idx].nome, $1); }
+        V.lista[idx].valor = $3;
     }
     | PRINT '(' VAR ')' {
-        for(int i = 0; i < V.tam; i++) {
-            if(strcmp($3, V.lista[i].nome) == 0) {
-                printf("%2.f\n", V.lista[i].valor);
-            }
-        }
+        int idx = busca_idx($3);
+        if(idx >= 0) { printf("%.2f\n", V.lista[idx].valor); }
+        else { printf("Semantic Error\n"); }
     }
-
+    ;
 E:    E '+' E   {$$ = $1 + $3;}
     | E '-' E   {$$ = $1 - $3;}
     | E '*' E   {$$ = $1 * $3;}
     | E '/' E   {$$ = $1 / $3;}
     | '(' E ')' {$$ = $2;}
-    | VALOR     {$$ = $1;}   
-;
+    | NUM       {$$ = $1;}
+    | VAR {
+        int idx = busca_idx($1);
+        if (idx < 0) { printf("Variable not defined\n"); $$ = 0; }
+        else $$ = V.lista[idx].valor;
+    }   
+    ;
 %%
 
 #include "lex.yy.c"

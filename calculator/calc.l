@@ -2,25 +2,27 @@
     
 %}
 
-NUM [0-9]+
+NUM [0-9]+(\.[0-9]+)?
 PRINT "print"
-VAR [a-zA-Z]
+VAR [a-zA-Z_][a-zA-Z0-9_]*
 
 %%
 
 {NUM} {
     yylval.Float = atof(yytext);
-    return VALOR;
+    return NUM;
 }
 
-{VAR} {
-    return VAR;
-}
 
 {PRINT} {return PRINT;}
 
+{VAR} {
+    yylval.Str = strdup(yytext);
+    return VAR;
+}
+
 [-+*/()=] {return *yytext;}
 
-[\ \n\t]* {;}
+[\ \n\t]+ {;}
 
 %%
