@@ -2,6 +2,7 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
+    #include <math.h>
 
     typedef struct {
         char nome[50];
@@ -35,6 +36,7 @@
 %token PRINT
 %left '+' '-'
 %left '*' '/'
+%right '^'
 
 %type <Float> E;
 
@@ -59,7 +61,11 @@ cod :
 E:    E '+' E   {$$ = $1 + $3;}
     | E '-' E   {$$ = $1 - $3;}
     | E '*' E   {$$ = $1 * $3;}
-    | E '/' E   {$$ = $1 / $3;}
+    | E '/' E   {
+        if($3 != 0) {$$ = $1 / $3;}
+        else {printf("Undefined\n"); $$ = 0;}
+    }
+    | E '^' E {$$ = pow($1, $3);}
     | '(' E ')' {$$ = $2;}
     | NUM       {$$ = $1;}
     | VAR {

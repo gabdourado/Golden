@@ -21,7 +21,7 @@ VAR [a-zA-Z_][a-zA-Z0-9_]*
     return VAR;
 }
 
-[-+*/()=] {return *yytext;}
+[-+*/()=^] {return *yytext;}
 
 [\ \n\t]+ {;}
 

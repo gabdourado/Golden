@@ -1,8 +1,8 @@
 A = 2 + 3 * 2
 print(A)
 
-B = (2 + 3) * 2
+B = (2 + 3) / 2
 print(B)
 
-C = A + B
+C = 2 ^ 3 * 2
 print(C)
