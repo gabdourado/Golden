@@ -34,11 +34,11 @@
 %token <Float> NUM
 %token <Str> VAR
 %token PRINT
-%left '+' '-'
-%left '*' '/'
-%right '^'
 
-%type <Float> E;
+%type <Float> E
+%type <Float> T
+%type <Float> P
+%type <Float> F
 
 %%
 
@@ -58,37 +58,25 @@ cod :
         else { printf("Semantic Error\n"); }
     }
     ;
+
 E :   E '+' T {$$ = $1 + $3;}
     | E '-' T {$$ = $1 - $3;}
-    | T       {$$ = $1}
+    | T       {$$ = $1;}
     ;
 
 T :   T '*' P {$$ = $1 * $3;}
-    | T '/' P {$$ = $1 / $3;}
-    | P       {$$ = $1}
-    ;
-
-P : F '^' P  
-    | F
-    ;
-
-F : '(' E ')'
-    | NUM       {$$ = $1;}
-    | VAR {
-        int idx = busca_idx($1);
-        if (idx < 0) { printf("Variable not defined\n"); $$ = 0; }
-        else $$ = V.lista[idx].valor;
-    }
-
-E:    E '+' E   {$$ = $1 + $3;}
-    | E '-' E   {$$ = $1 - $3;}
-    | E '*' E   {$$ = $1 * $3;}
-    | E '/' E   {
+    | T '/' P {
         if($3 != 0) {$$ = $1 / $3;}
-        else {printf("Undefined\n"); $$ = 0;}
+        else        {printf("Undefined\n"); $$ = 0;}
     }
-    | E '^' E {$$ = pow($1, $3);}
-    | '(' E ')' {$$ = $2;}
+    | P       {$$ = $1;}
+    ;
+
+P :   F '^' P {$$ = pow($1, $3);}
+    | F       {$$ = $1;}
+    ;
+
+F : '(' E ')'   {$$ = $2;}
     | NUM       {$$ = $1;}
     | VAR {
         int idx = busca_idx($1);
@@ -96,6 +84,7 @@ E:    E '+' E   {$$ = $1 + $3;}
         else $$ = V.lista[idx].valor;
     }
     ;
+
 %%
 
 #include "lex.yy.c"
