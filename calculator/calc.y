@@ -35,28 +35,33 @@
 %token <Str> VAR
 %token PRINT SQRT SIN COS TAN LOG ABS
 
-%type <Float> E
-%type <Float> T
-%type <Float> P
-%type <Float> F
-%type <Float> U
+%type <Float> E T P F U
 
 %%
 
-prog : prog cod
-    |  cod
+prog 
+    : 
+    |  prog statement
     ;
 
-cod : 
-    VAR '=' E {
-        int idx = busca_idx($1);
-        if(idx < 0) { idx = V.tam++; strcpy(V.lista[idx].nome, $1); }
-        V.lista[idx].valor = $3;
-    }
-    | PRINT '(' VAR ')' {
+statement 
+    : assingment
+    | write
+    ;
+
+write
+    : PRINT '(' VAR ')' {
         int idx = busca_idx($3);
         if(idx >= 0) { printf("%.2f\n", V.lista[idx].valor); }
         else         { printf("Variable not defined\n"); }
+    }
+    ;
+
+assingment
+    : VAR '=' E {
+        int idx = busca_idx($1);
+        if(idx < 0) { idx = V.tam++; strcpy(V.lista[idx].nome, $1); }
+        V.lista[idx].valor = $3;
     }
     ;
 
