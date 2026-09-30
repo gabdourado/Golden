@@ -50,11 +50,7 @@ statement
     ;
 
 write
-    : PRINT '(' VAR ')' {
-        int idx = busca_idx($3);
-        if(idx >= 0) { printf("%.2f\n", V.lista[idx].valor); }
-        else         { printf("Variable not defined\n"); }
-    }
+    : PRINT '(' E ')'      { printf("%.6f\n", $3); }
     | PRINT '(' STRING ')' { printf("%s\n", $3); }
     ;
 
@@ -114,8 +110,6 @@ F   : '(' E ')'   {$$ = $2;}
 
 int main (void) {
     V.tam = 0;
-    yyin = fopen("examples/test.au", "r");
     yyparse();
-    fclose(yyin);
     return 0;
 }

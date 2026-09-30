@@ -1,0 +1,27 @@
+print("The golden ratio and the Fibonacci numbers")
+
+sqrt5 = sqrt(5)
+phi = (1 + sqrt5) / 2
+psi = (1 - sqrt5) / 2
+
+print("Golden ratio (phi):")
+print(phi)
+
+print("Checking that phi is a root of x^2 - x - 1:")
+print(abs(phi ^ 2 - phi - 1))
+
+print("Binet's formula: F(n) = (phi^n - psi^n) / sqrt(5)")
+
+print("F(9):")
+print((phi ^ 9 - psi ^ 9) / sqrt5)
+
+f10 = (phi ^ 10 - psi ^ 10) / sqrt5
+f11 = (phi ^ 11 - psi ^ 11) / sqrt5
+
+print("F(10):")
+print(f10)
+print("F(11):")
+print(f11)
+
+print("The ratio F(11)/F(10) is already very close to phi:")
+print(f11 / f10)
