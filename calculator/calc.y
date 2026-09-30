@@ -33,12 +33,13 @@
 
 %token <Float> NUM
 %token <Str> VAR
-%token PRINT
+%token PRINT SQRT SIN COS TAN LOG ABS
 
 %type <Float> E
 %type <Float> T
 %type <Float> P
 %type <Float> F
+%type <Float> U
 
 %%
 
@@ -55,7 +56,7 @@ cod :
     | PRINT '(' VAR ')' {
         int idx = busca_idx($3);
         if(idx >= 0) { printf("%.2f\n", V.lista[idx].valor); }
-        else { printf("Semantic Error\n"); }
+        else         { printf("Variable not defined\n"); }
     }
     ;
 
@@ -64,15 +65,19 @@ E :   E '+' T {$$ = $1 + $3;}
     | T       {$$ = $1;}
     ;
 
-T :   T '*' P {$$ = $1 * $3;}
-    | T '/' P {
+T :   T '*' U {$$ = $1 * $3;}
+    | T '/' U {
         if($3 != 0) {$$ = $1 / $3;}
         else        {printf("Undefined\n"); $$ = 0;}
     }
+    | U       {$$ = $1;}
+    ;
+
+U : '-' U     {$$ = -$2;}
     | P       {$$ = $1;}
     ;
 
-P :   F '^' P {$$ = pow($1, $3);}
+P :   F '^' U {$$ = pow($1, $3);}
     | F       {$$ = $1;}
     ;
 
@@ -81,8 +86,20 @@ F : '(' E ')'   {$$ = $2;}
     | VAR {
         int idx = busca_idx($1);
         if (idx < 0) { printf("Variable not defined\n"); $$ = 0; }
-        else $$ = V.lista[idx].valor;
+        else         {$$ = V.lista[idx].valor;}
     }
+    | SQRT '(' E ')'  {
+        if($3 >= 0) {$$ = sqrt($3);}
+        else       {printf("Undefined\n"); $$ = 0;}
+    }
+    | SIN  '(' E ')'  {$$ = sin($3);}
+    | COS  '(' E ')'  {$$ = cos($3);}
+    | TAN  '(' E ')'  {$$ = tan($3);}
+    | LOG  '(' E ')'  {
+        if($3 > 0) {$$ = log10($3);}
+        else       {printf("Undefined\n"); $$ = 0;}
+    }
+    | ABS  '(' E ')'  {$$ = fabs($3);}
     ;
 
 %%

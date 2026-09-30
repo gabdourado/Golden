@@ -1,8 +1,36 @@
-A = 2 + 3 * 2
-print(A)
+x = 1
+f = x^2 - 2*x + 3
+print(f)
 
-B = (2 + 3) / 2
-print(B)
+x = 3
+f = x^2 - 2*x + 3
+print(f)
 
-C = 2 ^ 3 * 2
-print(C)
+n = -2^2
+print(n)
+
+m = 2^-2
+print(m)
+
+q = tan(pi/4)
+print(q)
+
+r = 3 - (-3)
+print(r)
+
+x = pi/2
+g = sin(x)
+print(g)
+
+c = cos(pi)
+print(c)
+
+s = sqrt(16) + abs(-5)
+print(s)
+
+l = log(100)
+print(l)
+
+d = 1/0
+
+y = w + 1
