@@ -1,0 +1,30 @@
+print("Approximating pi with two different series")
+
+print("Leibniz: pi/4 = 1 - 1/3 + 1/5 - 1/7 + 1/9 - ...")
+
+leibniz = 1 - 1/3 + 1/5 - 1/7 + 1/9 - 1/11 + 1/13 - 1/15 + 1/17 - 1/19
+print("Leibniz with 10 terms:")
+print(4 * leibniz)
+
+print("Machin: pi/4 = 4*arctan(1/5) - arctan(1/239)")
+print("Using arctan(x) = x - x^3/3 + x^5/5 - x^7/7 + ...")
+
+x = 1/5
+arctan5 = x - x ^ 3 / 3 + x ^ 5 / 5 - x ^ 7 / 7 + x ^ 9 / 9
+
+y = 1/239
+arctan239 = y - y ^ 3 / 3
+
+machin = 4 * (4 * arctan5 - arctan239)
+
+print("Machin with only 6 terms in total:")
+print(machin)
+
+real = 3.14159265358979
+print("Absolute error of Leibniz:")
+print(abs(real - 4 * leibniz))
+
+print("Absolute error of Machin:")
+print(abs(real - machin))
+
+print("Machin is far more accurate with fewer terms")

@@ -6,7 +6,7 @@ golden: src/golden.y src/golden.l
 	gcc src/golden.tab.c -o golden.out -lfl -lm
 
 run: golden
-	./golden.out < examples/example2.au
+	./golden.out < examples/example3.au
 
 clean:
 	rm -f golden src/lex.yy.c src/golden.tab.c src/golden.tab.h
