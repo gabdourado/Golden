@@ -1,7 +1,7 @@
 %{  
     #include <stdio.h>
-    #include <math.h>
     #include "symtab.h"
+    #include "operations.h"
 
     int  yylex(void);
     void yyerror(char *s) { printf("%s\n", s); }
@@ -41,47 +41,38 @@ assingment
     }
     ;
 
-E   : E '+' T {$$ = $1 + $3;}
-    | E '-' T {$$ = $1 - $3;}
-    | T       {$$ = $1;}
+E   : E '+' T { $$ = op_sum($1, $3); }
+    | E '-' T { $$ = op_dif($1, $3); }
+    | T       { $$ = $1; }
     ;
 
-T   : T '*' U {$$ = $1 * $3;}
-    | T '/' U {
-        if($3 != 0) {$$ = $1 / $3;}
-        else        {printf("Undefined\n"); $$ = 0;}
-    }
-    | U       {$$ = $1;}
+T   : T '*' U { $$ = op_mul($1, $3); }
+    | T '/' U { $$ = op_div($1, $3); }
+    | U       { $$ = $1; }
     ;
 
-U   : '-' U   {$$ = -$2;}
-    | P       {$$ = $1;}
+U   : '-' U   { $$ = -$2; }
+    | P       { $$ = $1; }
     ;
 
-P   : F '^' U {$$ = pow($1, $3);}
-    | F       {$$ = $1;}
+P   : F '^' U { $$ = op_pow($1, $3); }
+    | F       { $$ = $1; }
     ;
 
-F   : '(' E ')' {$$ = $2;}
-    | NUM       {$$ = $1;}
+F   : '(' E ')' { $$ = $2; }
+    | NUM       { $$ = $1; }
     | VAR {
         float out;
         if(!symtab_get($1, &out)) { printf("Variable not defined\n"); $$ = 0;}
         else { $$ = out; }
 
     }
-    | SQRT '(' E ')'  {
-        if($3 >= 0) {$$ = sqrt($3);}
-        else       {printf("Undefined\n"); $$ = 0;}
-    }
-    | SIN  '(' E ')'  {$$ = sin($3);}
-    | COS  '(' E ')'  {$$ = cos($3);}
-    | TAN  '(' E ')'  {$$ = tan($3);}
-    | LOG  '(' E ')'  {
-        if($3 > 0) {$$ = log10($3);}
-        else       {printf("Undefined\n"); $$ = 0;}
-    }
-    | ABS  '(' E ')'  {$$ = fabs($3);}
+    | SQRT '(' E ')'  { $$ = op_sqr($3); }
+    | SIN  '(' E ')'  { $$ = op_sin($3); }
+    | COS  '(' E ')'  { $$ = op_cos($3); }
+    | TAN  '(' E ')'  { $$ = op_tan($3); }
+    | LOG  '(' E ')'  { $$ = op_log($3); }
+    | ABS  '(' E ')'  { $$ = op_abs($3); }
     ;
 
 %%
