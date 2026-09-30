@@ -1,28 +1,9 @@
-%{
+%{  
     #include <stdio.h>
-    #include <stdlib.h>
-    #include <string.h>
     #include <math.h>
+    #include "symtab.h"
 
-    typedef struct {
-        char nome[50];
-        float valor;
-    } variavel;
-
-    typedef struct {
-        int tam;
-        variavel lista[100];
-    } variaveis;
-
-    variaveis V;
-
-    int busca_idx(char* nome) {
-        for(int i = 0; i < V.tam; i++)
-            if (strcmp(nome, V.lista[i].nome) == 0) return i;
-        return -1;
-    }
-
-    int yylex(void);
+    int  yylex(void);
     void yyerror(char *s) { printf("%s\n", s); }
 %}
 
@@ -56,9 +37,7 @@ write
 
 assingment
     : VAR '=' E {
-        int idx = busca_idx($1);
-        if(idx < 0) { idx = V.tam++; strcpy(V.lista[idx].nome, $1); }
-        V.lista[idx].valor = $3;
+        if(!symtab_set($1, $3)) { printf("Mememory error"); } 
     }
     ;
 
@@ -75,7 +54,7 @@ T   : T '*' U {$$ = $1 * $3;}
     | U       {$$ = $1;}
     ;
 
-U   : '-' U     {$$ = -$2;}
+U   : '-' U   {$$ = -$2;}
     | P       {$$ = $1;}
     ;
 
@@ -83,12 +62,13 @@ P   : F '^' U {$$ = pow($1, $3);}
     | F       {$$ = $1;}
     ;
 
-F   : '(' E ')'   {$$ = $2;}
+F   : '(' E ')' {$$ = $2;}
     | NUM       {$$ = $1;}
     | VAR {
-        int idx = busca_idx($1);
-        if (idx < 0) { printf("Variable not defined\n"); $$ = 0; }
-        else         {$$ = V.lista[idx].valor;}
+        float out;
+        if(!symtab_get($1, &out)) { printf("Variable not defined\n"); $$ = 0;}
+        else { $$ = out; }
+
     }
     | SQRT '(' E ')'  {
         if($3 >= 0) {$$ = sqrt($3);}
@@ -109,7 +89,7 @@ F   : '(' E ')'   {$$ = $2;}
 #include "lex.yy.c"
 
 int main (void) {
-    V.tam = 0;
+    symtab_init();
     yyparse();
     return 0;
 }
