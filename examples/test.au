@@ -1,14 +1,38 @@
-# This is Golden Language!
+print("Olá, está é minha calculadora!")
 
-let frase : str = "Hello, my name is Karolinda!";
-print(frase);
+x = 1
+f = x^2 - 2*x + 3
+print(f)
 
-let age : int;
-print("What is your age? ");
-input(age);
+x = 3
+f = x^2 - 2*x + 3
+print(f)
 
-print("Your age is: ");
-print(age);
+n = -2^2
+print(n)
 
-let condition : bool = true;
-print(condition);
+m = 2^-2
+print(m)
+
+q = tan(pi/4)
+print(q)
+
+r = 3 - (-3)
+print(r)
+
+x = pi/2
+g = sin(x)
+print(g)
+
+c = cos(pi)
+print(c)
+
+s = sqrt(16) + abs(-5)
+print(s)
+
+l = log(100)
+print(l)
+
+d = 1/0
+
+y = w + 1

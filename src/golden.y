@@ -1,231 +1,121 @@
 %{
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <math.h>
 
-typedef enum{
-    TYPE_INT,
-    TYPE_FLOAT,
-    TYPE_STR,
-    TYPE_BOOL
-} DataType;
+    typedef struct {
+        char nome[50];
+        float valor;
+    } variavel;
 
-typedef struct {
-    char name[64];
-    DataType type;
-    union {
-        int   i;
-        float f;
-        char  s[256];
-    } value;
-} Symbol;
+    typedef struct {
+        int tam;
+        variavel lista[100];
+    } variaveis;
 
-typedef struct {
-    Symbol s[100];
-    int    length; 
-} Table;
+    variaveis V;
 
-Table T;
+    int busca_idx(char* nome) {
+        for(int i = 0; i < V.tam; i++)
+            if (strcmp(nome, V.lista[i].nome) == 0) return i;
+        return -1;
+    }
 
-void    symtab_set_int  (char* name, int   value);
-void    symtab_set_float(char* name, float value);
-void    symtab_set_str  (char* name, char* value);
-void    symtab_set_bool (char* name, int value);
-Symbol* symtab_get      (char* name);
-
-int yylex(void);
-int yyerror(char *s);
-
-extern FILE *yyin;
-
+    int yylex(void);
+    void yyerror(char *s) { printf("%s\n", s); }
 %}
 
-%union {
-    int   i;
-    float f;
-    char* str;
+%union{
+    float Float;
+    char* Str;
 }
 
-%token DECL INPUT PRINT ASSIGN SEMICOLON COLON LPAREN RPAREN
-%token INT FLOAT STR BOOL
-%token <i> NUM_INT
-%token <f> NUM_FLOAT
-%token <str> VARIABLE STRING
-%token <i> VALUE_BOOL
+%token <Float> NUM
+%token <Str> VAR STRING
+%token PRINT SQRT SIN COS TAN LOG ABS
+
+%type <Float> E T P F U
 
 %%
 
-programa:
-
-    | programa statement
+prog 
+    : 
+    |  prog statement
     ;
 
-statement:
-      declaration SEMICOLON
-    | read        SEMICOLON
-    | write       SEMICOLON
+statement 
+    : assingment
+    | write
     ;
 
-declaration:
-    DECL VARIABLE COLON INT ASSIGN NUM_INT {
-        symtab_set_int($2, $6);
+write
+    : PRINT '(' VAR ')' {
+        int idx = busca_idx($3);
+        if(idx >= 0) { printf("%.2f\n", V.lista[idx].valor); }
+        else         { printf("Variable not defined\n"); }
     }
-    | DECL VARIABLE COLON INT {
-        symtab_set_int($2, 0);
-    }
-    | DECL VARIABLE COLON FLOAT ASSIGN NUM_FLOAT {
-        symtab_set_float($2, $6);
-    }
-    | DECL VARIABLE COLON FLOAT {
-        symtab_set_float($2, 0);
-    }
-    | DECL VARIABLE COLON STR ASSIGN STRING {
-        symtab_set_str($2, $6);
-    }
-    | DECL VARIABLE COLON STR {
-        symtab_set_str($2, "");
-    }
-    | DECL VARIABLE COLON BOOL ASSIGN VALUE_BOOL {
-        symtab_set_bool($2, $6);
-    }
-    | DECL VARIABLE COLON BOOL {
-        symtab_set_bool($2, 0);
+    | PRINT '(' STRING ')' { printf("%s\n", $3); }
+    ;
+
+assingment
+    : VAR '=' E {
+        int idx = busca_idx($1);
+        if(idx < 0) { idx = V.tam++; strcpy(V.lista[idx].nome, $1); }
+        V.lista[idx].valor = $3;
     }
     ;
 
-read:
-    INPUT LPAREN VARIABLE RPAREN {
-        char buffer[256];
-        scanf("%s", buffer);
-
-        Symbol* sym = symtab_get($3);
-        if(sym == NULL) 
-            printf("Error: Undeclared Variable %s\n", $3);
-        else{
-             switch(sym->type){
-                case TYPE_INT: {
-                                    char *endptr;
-                                    long val = strtol(buffer, &endptr, 10);
-                                    if (endptr == buffer) {
-                                        printf("Type Error!\n");
-                                    } else {
-                                        symtab_set_int($3, (int)val);
-                                    }
-                                    break;
-                                }
-                case TYPE_FLOAT: {
-                                    char *endptr;
-                                    double val = strtod(buffer, &endptr);
-                                    if (endptr == buffer) {
-                                        printf("Type Error!\n");
-                                    } else {
-                                        symtab_set_float($3, (float)val);
-                                    }
-                                    break;
-                                }
-                case TYPE_STR:   symtab_set_str($3, buffer); break;
-                case TYPE_BOOL: {
-                    char* c = "true";
-                    if(strcmp(buffer, c) == 0)
-                        symtab_set_bool($3, 1);
-                    else
-                        symtab_set_bool($3, 0);
-                    break;
-                }
-            }
-        }
-    }
+E   : E '+' T {$$ = $1 + $3;}
+    | E '-' T {$$ = $1 - $3;}
+    | T       {$$ = $1;}
     ;
 
-write:
-    PRINT LPAREN VARIABLE RPAREN {
-        Symbol* sym = symtab_get($3);
-        if(sym == NULL)
-            printf("Error: Undeclared Variable %s\n", $3);
-        else {
-            switch(sym->type){
-                case TYPE_INT:   printf("%d\n", sym->value.i); break;
-                case TYPE_FLOAT: printf("%f\n", sym->value.f); break;
-                case TYPE_STR:   printf("%s\n", sym->value.s); break;
-                case TYPE_BOOL:  printf("%s\n", sym->value.i ? "true" : "false"); break;
-            }
-        }
+T   : T '*' U {$$ = $1 * $3;}
+    | T '/' U {
+        if($3 != 0) {$$ = $1 / $3;}
+        else        {printf("Undefined\n"); $$ = 0;}
     }
-    | PRINT LPAREN STRING RPAREN {
-        printf("%s", $3);
+    | U       {$$ = $1;}
+    ;
+
+U   : '-' U     {$$ = -$2;}
+    | P       {$$ = $1;}
+    ;
+
+P   : F '^' U {$$ = pow($1, $3);}
+    | F       {$$ = $1;}
+    ;
+
+F   : '(' E ')'   {$$ = $2;}
+    | NUM       {$$ = $1;}
+    | VAR {
+        int idx = busca_idx($1);
+        if (idx < 0) { printf("Variable not defined\n"); $$ = 0; }
+        else         {$$ = V.lista[idx].valor;}
     }
-    ;  
+    | SQRT '(' E ')'  {
+        if($3 >= 0) {$$ = sqrt($3);}
+        else       {printf("Undefined\n"); $$ = 0;}
+    }
+    | SIN  '(' E ')'  {$$ = sin($3);}
+    | COS  '(' E ')'  {$$ = cos($3);}
+    | TAN  '(' E ')'  {$$ = tan($3);}
+    | LOG  '(' E ')'  {
+        if($3 > 0) {$$ = log10($3);}
+        else       {printf("Undefined\n"); $$ = 0;}
+    }
+    | ABS  '(' E ')'  {$$ = fabs($3);}
+    ;
+
 %%
 
-void symtab_set_int(char* name, int value) {
-    for(int pos = 0; pos < T.length; pos++) {
-        if(strcmp(T.s[pos].name, name) == 0) {
-            T.s[pos].value.i = value;
-            return;
-        }
-    }
-    strcpy(T.s[T.length].name, name);
-    T.s[T.length].type    = TYPE_INT;
-    T.s[T.length].value.i = value;
-    T.length++;
-}
+#include "lex.yy.c"
 
-void symtab_set_float(char* name, float value) {
-    for(int pos = 0; pos < T.length; pos++) {
-        if(strcmp(T.s[pos].name, name) == 0) {
-            T.s[pos].value.f = value;
-            return;
-        }
-    }
-    strcpy(T.s[T.length].name, name);
-    T.s[T.length].type    = TYPE_FLOAT;
-    T.s[T.length].value.f = value;
-    T.length++;
-}
-
-void symtab_set_str(char* name, char* value){
-    for(int pos = 0; pos < T.length; pos++) {
-        if(strcmp(T.s[pos].name, name) == 0) {
-            T.s[pos].type = TYPE_STR; 
-            strcpy(T.s[pos].value.s, value);
-            return;
-        }
-    }
-    strcpy(T.s[T.length].name, name);
-    T.s[T.length].type = TYPE_STR;
-    strcpy(T.s[T.length].value.s, value);
-    T.length++;
-}
-
-void symtab_set_bool(char* name, int value) {
-    for(int pos = 0; pos < T.length; pos++) {
-        if(strcmp(T.s[pos].name, name) == 0) {
-            T.s[pos].value.i = value;
-            return;
-        }
-    }
-    strcpy(T.s[T.length].name, name);
-    T.s[T.length].type    = TYPE_BOOL;
-    T.s[T.length].value.i = value;
-    T.length++;
-}
-
-Symbol* symtab_get(char* name) {
-    for(int pos = 0; pos < T.length; pos++) 
-        if(strcmp(T.s[pos].name, name) == 0) 
-            return &T.s[pos];
-    return NULL;
-    
-}
-
-int main() {
+int main (void) {
+    V.tam = 0;
     yyin = fopen("examples/test.au", "r");
     yyparse();
     fclose(yyin);
-    return 0;
-}
-
-int yyerror(char *s) {
-    fprintf(stderr, "Syntatic Error: %s\n", s);
     return 0;
 }
