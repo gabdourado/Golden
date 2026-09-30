@@ -58,6 +58,28 @@ cod :
         else { printf("Semantic Error\n"); }
     }
     ;
+E :   E '+' T {$$ = $1 + $3;}
+    | E '-' T {$$ = $1 - $3;}
+    | T       {$$ = $1}
+    ;
+
+T :   T '*' P {$$ = $1 * $3;}
+    | T '/' P {$$ = $1 / $3;}
+    | P       {$$ = $1}
+    ;
+
+P : F '^' P  
+    | F
+    ;
+
+F : '(' E ')'
+    | NUM       {$$ = $1;}
+    | VAR {
+        int idx = busca_idx($1);
+        if (idx < 0) { printf("Variable not defined\n"); $$ = 0; }
+        else $$ = V.lista[idx].valor;
+    }
+
 E:    E '+' E   {$$ = $1 + $3;}
     | E '-' E   {$$ = $1 - $3;}
     | E '*' E   {$$ = $1 * $3;}
@@ -72,7 +94,7 @@ E:    E '+' E   {$$ = $1 + $3;}
         int idx = busca_idx($1);
         if (idx < 0) { printf("Variable not defined\n"); $$ = 0; }
         else $$ = V.lista[idx].valor;
-    }   
+    }
     ;
 %%
 
