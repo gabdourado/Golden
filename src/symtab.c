@@ -23,14 +23,22 @@ int symtab_busca_idx(const char *nome) {
     return -1;
 }
 
-int symtab_set(const char *nome, float valor) {
+int symtab_declara(const char *nome, float valor) {
     int idx = symtab_busca_idx(nome);
     if (idx < 0) {
-        if (symtab_full()) return 0;
+        if (symtab_full()) return -1;
         idx = V.tam++;
         strncpy(V.lista[idx].nome, nome, NOME_MAX - 1);
         V.lista[idx].nome[NOME_MAX - 1] = '\0';
+        V.lista[idx].valor = valor;
+        return 1;
     }
+    return 0;
+}
+
+int symtab_set(const char *nome, float valor) {
+    int idx = symtab_busca_idx(nome);
+    if (idx < 0)      { return  0; }
     V.lista[idx].valor = valor;
     return 1;
 }

@@ -13,8 +13,10 @@ STRING \"[^"]*\"
     return NUM;
 }
 
-"print" {return PRINT;}
-"sqrt"  { return SQRT;}
+"print" { return PRINT; }
+"input" { return INPUT; }
+"float" { return FLOAT; }
+"sqrt"  { return SQRT; }
 "sin"   { return SIN; }
 "cos"   { return COS; }
 "tan"   { return TAN; }
