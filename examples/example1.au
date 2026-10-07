@@ -1,8 +1,8 @@
 print("Approximating 'e' number with a Taylor series")
 print("e = 1 + 1/1! + 1/2! + 1/3! + ...")
 
-e = 2
-term = 1
+float e = 2
+float term = 1
 
 term = term * 2
 e = e + 1/term
@@ -22,6 +22,6 @@ e = e + 1/term
 print("Approximation with 8 terms:")
 print(e)
 
-real = 2.718281
+float real = 2.718281
 print("Absolute error:")
 print(abs(real - e))
