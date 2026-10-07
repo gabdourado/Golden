@@ -103,8 +103,10 @@ F   : '(' E ')' { $$ = $2; }
 
 #include "lex.yy.c"
 
-int main (void) {
+int main(int argc, char **argv) {
+    yyin = fopen(argv[1], "r");
     symtab_init();
-    yyparse();
-    return 0;
+    int r = yyparse();
+    fclose(yyin);
+    return r;
 }

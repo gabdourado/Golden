@@ -1,0 +1,27 @@
+print("Newton's method for sqrt(a)")
+print("g(n+1) = (g(n) + a/g(n)) / 2")
+
+print("Enter a positive number:")
+float a
+input(a)
+
+float g = a
+
+g = (g + a/g) / 2
+print("After 1 iteration:")
+print(g)
+g = (g + a/g) / 2
+print("After 2 iterations:")
+print(g)
+g = (g + a/g) / 2
+print("After 3 iterations:")
+print(g)
+g = (g + a/g) / 2
+print("After 4 iterations:")
+print(g)
+g = (g + a/g) / 2
+print("After 5 iterations:")
+print(g)
+
+print("Absolute error against built-in sqrt:")
+print(abs(sqrt(a) - g))
