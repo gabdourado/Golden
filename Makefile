@@ -1,12 +1,13 @@
-all: golden
+all: build/golden.out
 
-golden: src/golden.y src/golden.l
-	flex -i -o src/lex.yy.c src/golden.l
-	bison -d -o src/golden.tab.c src/golden.y
-	gcc src/golden.tab.c src/symtab.c src/operations.c src/io.c -o golden.out -lfl -lm
+build/golden.out: src/parser/golden.y src/parser/golden.l src/symtab/symtab.c src/operations/operations.c src/io/io.c
+	mkdir -p build
+	flex -i -o build/lex.yy.c src/parser/golden.l
+	bison -d -o build/golden.tab.c src/parser/golden.y
+	gcc -Isrc build/golden.tab.c src/symtab/symtab.c src/operations/operations.c src/io/io.c -o build/golden.out -lfl -lm
 
-run: golden
-	./golden.out  examples/example4.au
+run: build/golden.out
+	./build/golden.out examples/example1.au
 
 clean:
-	rm -f golden src/lex.yy.c src/golden.tab.c src/golden.tab.h
+	rm -rf build

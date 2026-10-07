@@ -1,8 +1,8 @@
 %{  
     #include <stdio.h>
-    #include "symtab.h"
-    #include "operations.h"
-    #include "io.h"
+    #include "symtab/symtab.h"
+    #include "operations/operations.h"
+    #include "io/io.h"
 
     int  yylex(void);
     void yyerror(char *s) { printf("%s\n", s); }
