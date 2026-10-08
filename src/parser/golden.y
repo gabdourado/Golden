@@ -34,14 +34,23 @@ statement
     ;
 
 declaration
-    : FLOAT VAR {
-        int r = symtab_declara($2, 0.0f);
-        if (r == -1)     { report_error("Mememory error"); }
+    : FLOAT decl_list
+    ;
+
+decl_list
+    : decl_item
+    | decl_list ',' decl_item
+    ;
+
+decl_item
+    : VAR {
+        int r = symtab_declara($1, 0.0f);
+        if      (r == -1)     { report_error("Mememory error"); }
         else if (r == 0) { report_error("Variable already declared"); }
     }
-    | FLOAT VAR '=' E {
-        int r = symtab_declara($2, $4);
-        if (r == -1)     { report_error("Mememory error"); }
+    | VAR '=' E {
+        int r = symtab_declara($1, $3);
+        if      (r == -1)     { report_error("Mememory error"); }
         else if (r == 0) { report_error("Variable already declared"); }
     }
     ;

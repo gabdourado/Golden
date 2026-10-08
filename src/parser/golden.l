@@ -36,7 +36,7 @@ STRING \"[^"]*\"
     return STRING;
 }
 
-[-+*/()=^] {return *yytext;}
+[-+*/()=^,] {return *yytext;}
 
 [\ \n\t]+ {;}
 

@@ -7,7 +7,7 @@ build/golden.out: src/parser/golden.y src/parser/golden.l src/symtab/symtab.c sr
 	gcc -Isrc build/golden.tab.c src/symtab/symtab.c src/operations/operations.c src/io/io.c -o build/golden.out -lfl -lm
 
 run: build/golden.out
-	./build/golden.out examples/example1.au
+	./build/golden.out examples/example5.au
 
 clean:
 	rm -rf build

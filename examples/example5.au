@@ -1,0 +1,12 @@
+print("The 3-4-5 triangle")
+
+float a = 3, b = 4, c = sqrt(a ^ 2 + b ^ 2), perimeter, area
+perimeter = a + b + c
+area = a * b / 2
+
+print("Hypotenuse:")
+print(c)
+print("Perimeter:")
+print(perimeter)
+print("Area:")
+print(area)
