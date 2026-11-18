@@ -14,6 +14,8 @@ STRING \"[^"]*\"
 }
 
 "print" { return PRINT; }
+"if"    { return IF; }
+"else"  { return ELSE; } 
 "input" { return INPUT; }
 "float" { return FLOAT; }
 "sqrt"  { return SQRT; }
@@ -43,7 +45,7 @@ STRING \"[^"]*\"
     return STRING;
 }
 
-[-+*/()=^,] {return *yytext;}
+[-+*/()=^,{}] {return *yytext;}
 
 [\ \n\t]+ {;}
 

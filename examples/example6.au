@@ -1,1 +1,37 @@
-print(4 > 2)
+float x = 5
+float y = 0
+
+if (x > 3) {
+    print("x maior que 3")
+    y = 1
+} else {
+    print("x menor ou igual a 3")
+    y = 2
+}
+print(y)
+
+if (x < 3) {
+    print("nao deve aparecer")
+} else {
+    print("else ok")
+}
+
+if (x == 5) {
+    print("if sem else ok")
+}
+
+if (x != 5) {
+    print("nao deve aparecer")
+}
+
+if (x) {
+    print("diferente de zero ok")
+}
+
+if (x > 3) {
+    if (x > 10) {
+        print("maior que 10")
+    } else {
+        print("entre 4 e 10")
+    }
+}

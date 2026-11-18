@@ -78,6 +78,15 @@ Ast * newCmp(int op_type, Ast *l, Ast *r) {
 	return new;
 }
 
+Ast * newFlow(int nodetype, Ast *cond, Ast *l, Ast *r) {
+	Ast *new = (Ast*)malloc(sizeof(Ast));
+	new->nodetype = nodetype;
+	new->cond = cond;
+	new->left = l;
+	new->right = r;
+	return new;
+}
+
 float eval(Ast* n) {
     if (!n) return 0;
     switch (n->nodetype) {
@@ -157,6 +166,17 @@ float eval(Ast* n) {
             p->valor = v;
             return v;
         }
+        case NODE_IF:
+            if (eval(n->cond) != 0)
+                eval(n->left);
+            return 0;
+
+        case NODE_IFELSE:
+            if (eval(n->cond) != 0)
+                eval(n->left);
+            else
+                eval(n->right);
+            return 0;
         case NODE_BLOCO:
             eval(n->left);
             return eval(n->right);
