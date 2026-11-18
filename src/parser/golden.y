@@ -50,7 +50,8 @@ assignment
     ;
 
 write
-    : PRINT '(' E ')' { $$ = newNode(NODE_PRINT, $3, NULL); }
+    : PRINT '(' E ')'      { $$ = newNode(NODE_PRINT, $3, NULL); }
+    | PRINT '(' STRING ')' { $$ = newStr($3); }
     ;
 
 E   : E '+' T { $$ = newNode(NODE_ADD, $1, $3); }
@@ -67,9 +68,14 @@ U   : '-' U   { $$ = newNode(NODE_NEG, $2, NULL); }
     | F       { $$ = $1; }
     ;
 
-F   : '(' E ')' { $$ = $2; }
-    | NUM       { $$ = newFloat($1); }
-    | VAR       { $$ = newVar($1); }
+F   : '(' E ')'      { $$ = $2; }
+    | NUM            { $$ = newFloat($1); }
+    | VAR            { $$ = newVar($1); }
+    | SQRT '(' E ')' { $$ = newNode(NODE_SQRT, $3, NULL); }
+    | SIN  '(' E ')' { $$ = newNode(NODE_SIN,  $3, NULL); }
+    | COS  '(' E ')' { $$ = newNode(NODE_COS,  $3, NULL); }
+    | TAN  '(' E ')' { $$ = newNode(NODE_TAN,  $3, NULL); }
+    | LOG  '(' E ')' { $$ = newNode(NODE_LOG,  $3, NULL); }
     | ABS  '(' E ')' { $$ = newNode(NODE_ABS,  $3, NULL); }
     ;
 

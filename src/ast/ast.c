@@ -4,12 +4,6 @@
 #include <math.h>
 #include "ast.h"
 
-typedef struct vars {
-    char name[50];
-    float valor;
-    struct vars* prox;
-} Vars;
-
 static Vars* tab = NULL;
 
 void report_error(char* msg) { printf("Error: %s\n", msg); }
@@ -62,6 +56,13 @@ Ast* newNamed(int type, char* name, Ast* l) {
     return n;
 }
 
+Ast* newStr(char* s) {
+    Ast* n = calloc(1, sizeof(Ast));
+    n->nodetype = NODE_PRINTSTR;
+    n->str = strdup(s);
+    return n;
+}
+
 float eval(Ast* n) {
     if (!n) return 0;
     switch (n->nodetype) {
@@ -78,6 +79,24 @@ float eval(Ast* n) {
             float d = eval(n->right);
             if (d == 0) { report_error("Division by zero"); return 0; }
             return eval(n->left) / d;
+        }
+        case NODE_SQRT: {
+            float x = eval(n->left);
+            if(x < 0) {
+                printf("Undefined\n"); 
+                return 0;
+            } return sqrt(x);
+        }
+        case NODE_SIN: return sin(eval(n->left));
+        case NODE_COS: return cos(eval(n->left));
+        case NODE_TAN: return tan(eval(n->left));
+        case NODE_LOG: {
+            float x = eval(n->left);
+            if(x < 0) {
+                printf("Undefined\n"); 
+                return 0;  
+            }
+            return log10(x);
         }
         case NODE_ABS: return fabs(eval(n->left));
         case NODE_NEG: return -eval(n->left);
@@ -97,6 +116,10 @@ float eval(Ast* n) {
             float v = eval(n->left);
             printf("%g\n", v);
             return v;
+        }
+        case NODE_PRINTSTR: {
+            printf("%s\n", n->str);
+            return 0;
         }
         case NODE_BLOCO:
             eval(n->left);
