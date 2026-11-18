@@ -1,37 +1,17 @@
-float x = 5
-float y = 0
+float n
+float fat = 1
+float i = 2
 
-if (x > 3) {
-    print("x maior que 3")
-    y = 1
+print("Enter a non-negative number:")
+input(n)
+
+if (n < 0) {
+    print("Factorial is not defined for negative numbers")
 } else {
-    print("x menor ou igual a 3")
-    y = 2
-}
-print(y)
-
-if (x < 3) {
-    print("nao deve aparecer")
-} else {
-    print("else ok")
-}
-
-if (x == 5) {
-    print("if sem else ok")
-}
-
-if (x != 5) {
-    print("nao deve aparecer")
-}
-
-if (x) {
-    print("diferente de zero ok")
-}
-
-if (x > 3) {
-    if (x > 10) {
-        print("maior que 10")
-    } else {
-        print("entre 4 e 10")
+    while (i <= n) {
+        fat = fat * i
+        i = i + 1
     }
+    print("Factorial:")
+    print(fat)
 }

@@ -170,13 +170,16 @@ float eval(Ast* n) {
             if (eval(n->cond) != 0)
                 eval(n->left);
             return 0;
-
         case NODE_IFELSE:
             if (eval(n->cond) != 0)
                 eval(n->left);
             else
                 eval(n->right);
             return 0;
+        case NODE_WHILE:
+            while(eval(n->cond) != 0) {
+                eval(n->left);
+            } return 0;
         case NODE_BLOCO:
             eval(n->left);
             return eval(n->right);

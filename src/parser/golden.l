@@ -15,7 +15,8 @@ STRING \"[^"]*\"
 
 "print" { return PRINT; }
 "if"    { return IF; }
-"else"  { return ELSE; } 
+"else"  { return ELSE; }
+"while" { return WHILE; }
 "input" { return INPUT; }
 "float" { return FLOAT; }
 "sqrt"  { return SQRT; }

@@ -16,7 +16,7 @@
 %token <Float> NUM
 %token <Str> VAR STRING
 %token <op> CMP
-%token PRINT INPUT FLOAT SQRT SIN COS TAN LOG ABS IF ELSE
+%token PRINT INPUT FLOAT SQRT SIN COS TAN LOG ABS IF ELSE WHILE
 
 %type <a> list statement declaration decl_list decl_item assignment write read flow C E T U P F
 
@@ -41,8 +41,9 @@ statement
     ;
 
 flow
-    : IF '(' C ')' '{' list '}' {$$ = newFlow(NODE_IF, $3, $6, NULL);}
-    | IF '(' C ')' '{' list '}' ELSE '{' list '}' {$$ = newFlow(NODE_IFELSE, $3, $6, $10);}
+    : IF '(' C ')' '{' list '}'                   { $$ = newFlow(NODE_IF, $3, $6, NULL); }
+    | IF '(' C ')' '{' list '}' ELSE '{' list '}' { $$ = newFlow(NODE_IFELSE, $3, $6, $10); }
+    | WHILE '(' C ')' '{' list '}'                { $$ = newFlow(NODE_WHILE, $3, $6, NULL); }
     ;
 
 declaration
