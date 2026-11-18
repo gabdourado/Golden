@@ -16,7 +16,7 @@
 %token <Str> VAR STRING
 %token PRINT INPUT FLOAT SQRT SIN COS TAN LOG ABS
 
-%type <a> statement declaration decl_list decl_item assignment write E T U F
+%type <a> statement declaration decl_list decl_item assignment write E T U P F
 
 %%
 
@@ -65,9 +65,13 @@ T   : T '*' U { $$ = newNode(NODE_MUL, $1, $3); }
     ;
 
 U   : '-' U   { $$ = newNode(NODE_NEG, $2, NULL); }
-    | F       { $$ = $1; }
+    | P       { $$ = $1; }
     ;
 
+P   : F '^' U { $$ = newNode(NODE_POW, $1, $3); }
+    | F       { $$ = $1; }
+    ;
+    
 F   : '(' E ')'      { $$ = $2; }
     | NUM            { $$ = newFloat($1); }
     | VAR            { $$ = newVar($1); }

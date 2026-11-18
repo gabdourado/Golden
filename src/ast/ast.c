@@ -87,6 +87,7 @@ float eval(Ast* n) {
                 return 0;
             } return sqrt(x);
         }
+        case NODE_POW: return powf(eval(n->left), eval(n->right));
         case NODE_SIN: return sin(eval(n->left));
         case NODE_COS: return cos(eval(n->left));
         case NODE_TAN: return tan(eval(n->left));
