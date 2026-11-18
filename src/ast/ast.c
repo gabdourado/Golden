@@ -1,45 +1,106 @@
+#include <stdio.h>
 #include <stdlib.h>
-#include "ast/ast.h"
-#include "operations/operations.h"
+#include <string.h>
+#include <math.h>
+#include "ast.h"
 
+typedef struct vars {
+    char name[50];
+    float valor;
+    struct vars* prox;
+} Vars;
 
-typedef enum {NODE_INT, NODE_VAR, NODE_ADD, NODE_DIF, NODE_MUL, NODE_DIV} NodeType;
+static Vars* tab = NULL;
 
-typedef struct Ast {
-    NodeType type;
-    struct Ast* left;
-    struct Ast* right;
-    float value;
-} Ast;
+void report_error(char* msg) { printf("Error: %s\n", msg); }
 
-Ast* newNode(Ast* l, Ast* r, NodeType t) {
-    Ast* new   = (Ast*) malloc(sizeof(Ast));
-    new->type  = t;
-    new->left  = l;
-    new->right = r;
-    return new;
+static Vars* search_var(char* name) {
+    Vars* l_aux = tab;
+    while (l_aux != NULL) {
+        if (strcmp(name, l_aux->name) == 0) 
+            return l_aux;
+        l_aux = l_aux->prox;    
+    }
+    return NULL;
 }
 
-Ast* newLeaf(float v) {
-    Ast* new   = (Ast*) malloc(sizeof(Ast));
-    new->type  = NODE_INT;
-    new->left  = NULL;
-    new->right = NULL;
-    new->value = v;
-    return new;
+static Vars* new_var(char* name) {
+    Vars* p = calloc(1, sizeof(Vars));
+    strncpy(p->name, name, 49);
+    p->prox = tab;
+    tab = p;
+    return p;
 }
 
-int eval(Ast* n) {
-    switch(n->type){
-        case NODE_INT: return n->value; break;
+Ast* newNode(int type, Ast* l, Ast* r) {
+    Ast* n = calloc(1, sizeof(Ast));
+    n->nodetype = type;
+    n->left = l;
+    n->right = r;
+    return n;
+}
+
+Ast* newFloat(float v) {
+    Ast* n = calloc(1, sizeof(Ast));
+    n->nodetype = NODE_FLOAT;
+    n->v = v;
+    return n;
+}
+
+Ast* newVar(char* name) {
+    Ast* n = calloc(1, sizeof(Ast));
+    n->nodetype = NODE_VAR;
+    strncpy(n->name, name, 49);
+    return n;
+}
+
+Ast* newNamed(int type, char* name, Ast* l) {
+    Ast* n = calloc(1, sizeof(Ast));
+    n->nodetype = type;
+    strncpy(n->name, name, 49);
+    n->left = l;
+    return n;
+}
+
+float eval(Ast* n) {
+    if (!n) return 0;
+    switch (n->nodetype) {
+        case NODE_FLOAT: return n->v;
         case NODE_VAR: {
-            float v;
-            if (!symtab_get(n->name, &v)) { report_error("Variable not defined"); return 0; }
+            Vars* p = search_var(n->name);
+            if (!p) { report_error("Variable not defined"); return 0; }
+            return p->valor;
+        }
+        case NODE_ADD: return eval(n->left) + eval(n->right);
+        case NODE_SUB: return eval(n->left) - eval(n->right);
+        case NODE_MUL: return eval(n->left) * eval(n->right);
+        case NODE_DIV: {
+            float d = eval(n->right);
+            if (d == 0) { report_error("Division by zero"); return 0; }
+            return eval(n->left) / d;
+        }
+        case NODE_ABS: return fabs(eval(n->left));
+        case NODE_NEG: return -eval(n->left);
+        case NODE_DECL: {
+            if (search_var(n->name)) { report_error("Variable already declared"); return 0; }
+            Vars* p = new_var(n->name);
+            p->valor = eval(n->left); 
+            return p->valor;
+        }
+        case NODE_ATRIB: {
+            Vars* p = search_var(n->name);
+            if (!p) { report_error("Variable not defined"); return 0; }
+            p->valor = eval(n->left);
+            return p->valor;
+        }
+        case NODE_PRINT: {
+            float v = eval(n->left);
+            printf("%g\n", v);
             return v;
         }
-        case NODE_ADD: return op_sum(eval(n->left), eval(n->right)); break;
-        case NODE_DIF: return op_dif(eval(n->left), eval(n->right)); break;
-        case NODE_MUL: return op_mul(eval(n->left), eval(n->right)); break;
-        case NODE_DIV: return op_div(eval(n->left), eval(n->right)); break;
+        case NODE_BLOCO:
+            eval(n->left);
+            return eval(n->right);
     }
+    return 0;
 }

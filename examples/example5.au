@@ -1,12 +1,22 @@
-print("The 3-4-5 triangle")
+float e = 2
+float term = 1
 
-float a = 3, b = 4, c = sqrt(a ^ 2 + b ^ 2), perimeter, area
-perimeter = a + b + c
-area = a * b / 2
+term = term * 2
+e = e + 1/term
+term = term * 3
+e = e + 1/term
+term = term * 4
+e = e + 1/term
+term = term * 5
+e = e + 1/term
+term = term * 6
+e = e + 1/term
+term = term * 7
+e = e + 1/term
+term = term * 8
+e = e + 1/term
 
-print("Hypotenuse:")
-print(c)
-print("Perimeter:")
-print(perimeter)
-print("Area:")
-print(area)
+print(e)
+
+float real = 2.718281
+print(abs(real - e))

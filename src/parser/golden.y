@@ -1,111 +1,76 @@
-%{  
+%{
     #include <stdio.h>
-    #include "symtab/symtab.h"
-    #include "operations/operations.h"
-    #include "io/io.h"
+    #include "ast/ast.h"
 
     int  yylex(void);
     void yyerror(char *s) { printf("%s\n", s); }
 %}
 
-%union{
+%union {
     float Float;
     char* Str;
+    Ast*  a;
 }
 
 %token <Float> NUM
 %token <Str> VAR STRING
 %token PRINT INPUT FLOAT SQRT SIN COS TAN LOG ABS
 
-%type <Float> E T P F U
+%type <a> statement declaration decl_list decl_item assignment write E T U F
 
 %%
 
-prog 
-    : 
-    |  prog statement
+prog
+    :
+    | prog statement { eval($2); }
     ;
 
-statement 
-    : declaration
-    | assignment
-    | write
-    | read
+statement
+    : declaration { $$ = $1; }
+    | assignment  { $$ = $1; }
+    | write       { $$ = $1; }
     ;
 
 declaration
-    : FLOAT decl_list
+    : FLOAT decl_list { $$ = $2; }
     ;
 
 decl_list
-    : decl_item
-    | decl_list ',' decl_item
+    : decl_item                  { $$ = $1; }
+    | decl_list ',' decl_item    { $$ = newNode(NODE_BLOCO, $1, $3); }
     ;
 
 decl_item
-    : VAR {
-        int r = symtab_declara($1, 0.0f);
-        if      (r == -1)     { report_error("Mememory error"); }
-        else if (r == 0) { report_error("Variable already declared"); }
-    }
-    | VAR '=' E {
-        int r = symtab_declara($1, $3);
-        if      (r == -1)     { report_error("Mememory error"); }
-        else if (r == 0) { report_error("Variable already declared"); }
-    }
-    ;
-
-write
-    : PRINT '(' E ')'      { op_write_float($3); }
-    | PRINT '(' STRING ')' { op_write_str($3); }
-    ;
-
-read
-    : INPUT '(' VAR ')' {
-        float v;
-        if (!op_read(&v))            { report_error("Invalid input"); } 
-        else if (!symtab_set($3, v)) { report_error("Variable not defined"); }
-    }
+    : VAR         { $$ = newNamed(NODE_DECL, $1, NULL); }
+    | VAR '=' E   { $$ = newNamed(NODE_DECL, $1, $3); }
     ;
 
 assignment
-    : VAR '=' E {
-        if (!symtab_set($1, $3)) { report_error("Variable not defined"); }
-    }
+    : VAR '=' E   { $$ = newNamed(NODE_ATRIB, $1, $3); }
     ;
 
-E   : E '+' T { $$ = op_sum($1, $3); }
-    | E '-' T { $$ = op_dif($1, $3); }
+write
+    : PRINT '(' E ')' { $$ = newNode(NODE_PRINT, $3, NULL); }
+    ;
+
+E   : E '+' T { $$ = newNode(NODE_ADD, $1, $3); }
+    | E '-' T { $$ = newNode(NODE_SUB, $1, $3); }
     | T       { $$ = $1; }
     ;
 
-T   : T '*' U { $$ = op_mul($1, $3); }
-    | T '/' U { $$ = op_div($1, $3); }
+T   : T '*' U { $$ = newNode(NODE_MUL, $1, $3); }
+    | T '/' U { $$ = newNode(NODE_DIV, $1, $3); }
     | U       { $$ = $1; }
     ;
 
-U   : '-' U   { $$ = -$2; }
-    | P       { $$ = $1; }
-    ;
-
-P   : F '^' U { $$ = op_pow($1, $3); }
+U   : '-' U   { $$ = newNode(NODE_NEG, $2, NULL); }
     | F       { $$ = $1; }
     ;
 
 F   : '(' E ')' { $$ = $2; }
-    | NUM       { $$ = $1; }
-    | VAR {
-        float out;
-        if(!symtab_get($1, &out)) { report_error("Variable not defined"); $$ = 0;}
-        else { $$ = out; }
-
-    }
-    | SQRT '(' E ')'  { $$ = op_sqr($3); }
-    | SIN  '(' E ')'  { $$ = op_sin($3); }
-    | COS  '(' E ')'  { $$ = op_cos($3); }
-    | TAN  '(' E ')'  { $$ = op_tan($3); }
-    | LOG  '(' E ')'  { $$ = op_log($3); }
-    | ABS  '(' E ')'  { $$ = op_abs($3); }
+    | NUM       { $$ = newFloat($1); }
+    | VAR       { $$ = newVar($1); }
+    | ABS  '(' E ')' { $$ = newNode(NODE_ABS,  $3, NULL); }
     ;
 
 %%
@@ -114,7 +79,6 @@ F   : '(' E ')' { $$ = $2; }
 
 int main(int argc, char **argv) {
     yyin = fopen(argv[1], "r");
-    symtab_init();
     int r = yyparse();
     fclose(yyin);
     return r;
