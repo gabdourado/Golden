@@ -122,6 +122,20 @@ float eval(Ast* n) {
             printf("%s\n", n->str);
             return 0;
         }
+        case NODE_INPUT: {
+            Vars* p = search_var(n->name);
+            if (!p) { report_error("Variable not defined"); return 0; }
+
+            float v;
+            if (scanf("%f", &v) != 1) {
+                report_error("Invalid input");
+                int c;
+                while ((c = getchar()) != '\n' && c != EOF);   /* descarta o resto da linha */
+                return 0;
+            }
+            p->valor = v;
+            return v;
+}
         case NODE_BLOCO:
             eval(n->left);
             return eval(n->right);
