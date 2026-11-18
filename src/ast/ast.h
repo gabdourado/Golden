@@ -2,7 +2,7 @@
 #define AST_H
 
 typedef enum {
-    NODE_FLOAT, NODE_VAR, NODE_PRINTSTR, NODE_INPUT,
+    NODE_FLOAT, NODE_VAR, NODE_PRINTSTR, NODE_INPUT, NODE_G, NODE_L, NODE_GE, NODE_LE, NODE_E, NODE_D, 
     NODE_ADD, NODE_SUB, NODE_MUL, NODE_DIV, NODE_POW, NODE_NEG, NODE_SQRT, NODE_SIN, NODE_COS,
     NODE_TAN, NODE_ABS, NODE_LOG, NODE_DECL, NODE_ATRIB, NODE_PRINT, NODE_BLOCO
 } NodeType;
@@ -25,7 +25,8 @@ Ast*  newNode(int type, Ast* l, Ast* r);
 Ast*  newFloat(float v);
 Ast*  newVar(char* name);
 Ast*  newNamed(int type, char* name, Ast* l);
-Ast* newStr(char* s);
+Ast * newCmp(int op_type, Ast *l, Ast *r);
+Ast*  newStr(char* s);
 float eval(Ast* n);
 void  report_error(char* msg);
 

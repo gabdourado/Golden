@@ -63,6 +63,21 @@ Ast* newStr(char* s) {
     return n;
 }
 
+Ast * newCmp(int op_type, Ast *l, Ast *r) {
+	Ast *new = (Ast*)malloc(sizeof(Ast));
+	switch(op_type){
+		case 1: new->nodetype = NODE_G; break;
+		case 2: new->nodetype = NODE_L; break;
+		case 3: new->nodetype = NODE_GE; break;
+		case 4: new->nodetype = NODE_LE; break;
+		case 5: new->nodetype = NODE_E; break;
+		case 6: new->nodetype = NODE_D; break;
+	}
+	new->left = l;
+	new->right = r;
+	return new;
+}
+
 float eval(Ast* n) {
     if (!n) return 0;
     switch (n->nodetype) {
@@ -72,6 +87,12 @@ float eval(Ast* n) {
             if (!p) { report_error("Variable not defined"); return 0; }
             return p->valor;
         }
+        case NODE_G:   return (eval(n->left) > eval(n->right))  ? 1 : 0; break;
+        case NODE_L:   return (eval(n->left) < eval(n->right))  ? 1 : 0; break;
+        case NODE_GE:  return (eval(n->left) >= eval(n->right)) ? 1 : 0; break;
+        case NODE_LE:  return (eval(n->left) <= eval(n->right)) ? 1 : 0; break;
+        case NODE_E:   return (eval(n->left) == eval(n->right)) ? 1 : 0; break;
+        case NODE_D:   return (eval(n->left) != eval(n->right)) ? 1 : 0; break;
         case NODE_ADD: return eval(n->left) + eval(n->right);
         case NODE_SUB: return eval(n->left) - eval(n->right);
         case NODE_MUL: return eval(n->left) * eval(n->right);
@@ -130,12 +151,12 @@ float eval(Ast* n) {
             if (scanf("%f", &v) != 1) {
                 report_error("Invalid input");
                 int c;
-                while ((c = getchar()) != '\n' && c != EOF);   /* descarta o resto da linha */
+                while ((c = getchar()) != '\n' && c != EOF);
                 return 0;
             }
             p->valor = v;
             return v;
-}
+        }
         case NODE_BLOCO:
             eval(n->left);
             return eval(n->right);

@@ -10,13 +10,15 @@
     float Float;
     char* Str;
     Ast*  a;
+    int op;
 }
 
 %token <Float> NUM
 %token <Str> VAR STRING
+%token <op> CMP
 %token PRINT INPUT FLOAT SQRT SIN COS TAN LOG ABS
 
-%type <a> statement declaration decl_list decl_item assignment write read E T U P F
+%type <a> statement declaration decl_list decl_item assignment write read C E T U P F
 
 %%
 
@@ -43,20 +45,24 @@ decl_list
 
 decl_item
     : VAR         { $$ = newNamed(NODE_DECL, $1, NULL); }
-    | VAR '=' E   { $$ = newNamed(NODE_DECL, $1, $3); }
+    | VAR '=' C   { $$ = newNamed(NODE_DECL, $1, $3); }
     ;
 
 assignment
-    : VAR '=' E   { $$ = newNamed(NODE_ATRIB, $1, $3); }
+    : VAR '=' C   { $$ = newNamed(NODE_ATRIB, $1, $3); }
     ;
 
 write
-    : PRINT '(' E ')'      { $$ = newNode(NODE_PRINT, $3, NULL); }
+    : PRINT '(' C ')'      { $$ = newNode(NODE_PRINT, $3, NULL); }
     | PRINT '(' STRING ')' { $$ = newStr($3); }
     ;
 
 read
     : INPUT '(' VAR ')' {$$ = newNamed(NODE_INPUT, $3, NULL); }
+    ;
+
+C   : E CMP E { $$ = newCmp($2, $1, $3); }
+    | E       { $$ = $1; }
     ;
 
 E   : E '+' T { $$ = newNode(NODE_ADD, $1, $3); }

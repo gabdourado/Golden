@@ -25,6 +25,13 @@ STRING \"[^"]*\"
 "pi"    { yylval.Float = M_PI; return NUM; }
 "euler" { yylval.Float = M_E;  return NUM; }
 
+">"  {yylval.op = 1; return CMP; }
+"<"  {yylval.op = 2; return CMP; }
+">=" {yylval.op = 3; return CMP; }
+"<=" {yylval.op = 4; return CMP; }
+"==" {yylval.op = 5; return CMP; }
+"!=" {yylval.op = 6; return CMP; }
+
 {VAR} {
     yylval.Str = strdup(yytext);
     return VAR;
